@@ -13,6 +13,8 @@ public class Main {
     public static void main(String[] args) {
         ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
         Game.loadMap();
+        String port = System.getenv("PORT");
+        int portNum = (port != null) ? Integer.parseInt(port) : 8080;
         Javalin app = Javalin.create(config -> {
             config.staticFiles.add("/public");
             // serve everything in resources/public
@@ -44,7 +46,7 @@ public class Main {
                     System.out.println("player " + (p != null ? p.getId() : "?") + " left");
                 });
             });
-        }).start(8080);
+        }).start(portNum);
         scheduledExecutorService.scheduleAtFixedRate(() -> {
             Game.saveMap();
         }, 30, 30, TimeUnit.SECONDS);   // every 30 seconds
