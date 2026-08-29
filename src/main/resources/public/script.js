@@ -69,31 +69,39 @@ colorPicker.addEventListener("input",()=>{player.color=colorPicker.value;colorPi
 
 
 //keybinds
-function update(){
-if(keys["w"]==true){if(player.y>0){player.y-=player.speed;}}
-if(keys["s"]==true){if(player.y<mapheight-20){player.y+=player.speed;}}
-if(keys["a"]==true){if(player.x>0){player.x-=player.speed;}}
-if(keys["d"]==true){if(player.x<mapwidth-20){player.x+=player.speed;}}
-if(keys[" "]==true){
-    socket.send(JSON.stringify({
-        type: "paint",
-        tile: key(Math.floor((player.x+9)/20), Math.floor((player.y+9)/20)),
-        color: player.color
-    }));
-}
-if(keys["shift"]==true){player.speed=3;}
-else{player.speed=1;}
-if(keys["q"]==true){player.color=mapTiles[key(Math.floor((player.x+9)/20),Math.floor((player.y+9)/20))] || "white";}
-camx=Math.floor(player.x-camwidth/2);
-camy=Math.floor(player.y-camheight/2);
+function update(dt){
+    const speed = keys["shift"] ? 300 : 100;   // pixels per SECOND
 
+    if(keys["w"]==true){if(player.y>0){player.y-=speed*dt;}}
+    if(keys["s"]==true){if(player.y<mapheight-20){player.y+=speed*dt;}}
+    if(keys["a"]==true){if(player.x>0){player.x-=speed*dt;}}
+    if(keys["d"]==true){if(player.x<mapwidth-20){player.x+=speed*dt;}}
+
+    if(keys[" "]==true){
+        socket.send(JSON.stringify({
+            type: "paint",
+            tile: key(Math.floor((player.x+9)/20), Math.floor((player.y+9)/20)),
+            color: player.color
+        }));
+    }
+
+    if(keys["q"]==true){player.color=mapTiles[key(Math.floor((player.x+9)/20),Math.floor((player.y+9)/20))] || "white";}
+
+    camx=Math.floor(player.x-camwidth/2);
+    camy=Math.floor(player.y-camheight/2);
 }
 //game loop
-function loop(){
+let lastTime = performance.now();
+
+function loop() {
+  const now = performance.now();
+  const dt = (now - lastTime) / 1000;   // seconds since last frame
+  lastTime = now;
+
   if (keys["m"]) {
-    drawMap();        // fullscreen minimap, game frozen (no update called)
+    drawMap();              // fullscreen minimap, game frozen
   } else {
-    update();         // normal game
+    update(dt);            // pass dt into update
     draw();
     drawPlayers();
   }
