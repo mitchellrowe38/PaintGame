@@ -9,6 +9,7 @@ import java.util.concurrent.*;
 public class Game {
 
     static ObjectMapper mapper = new ObjectMapper();
+    static String mapFile = "/data/map.json";
 
     private static ConcurrentHashMap<String, String> map = new ConcurrentHashMap<>();
     private static ConcurrentHashMap<WsContext,Player> players = new ConcurrentHashMap<>();
@@ -42,7 +43,7 @@ public class Game {
     }
     public static void saveMap() {
         try {
-            mapper.writeValue(new File("map.json"), map);   // map → map.json file
+            mapper.writeValue(new File(mapFile), map);   // map → map.json file
             System.out.println("map saved");
         } catch (Exception e) {
             System.out.println("save failed: " + e.getMessage());
@@ -50,14 +51,14 @@ public class Game {
     }
     public static void SaveMap() {
         try {
-            File file = new File("map.json");
+            File file = new File(mapFile);
             if (!file.exists()) {}
         }
         catch (Exception e) {e.printStackTrace();}
     }
     public static void loadMap() {
         try {
-            File file = new File("map.json");
+            File file = new File(mapFile);
             if (file.exists()) {                                    // only if it's there
                 ConcurrentHashMap<String, String> loaded =
                         mapper.readValue(file, ConcurrentHashMap.class); // file → map
