@@ -1,0 +1,14 @@
+# Build output
+target/
+
+# IntelliJ
+.idea/
+*.iml
+
+# Editor scratch files
+/shelf/
+/workspace.xml
+/httpRequests/
+
+# The saved map (see below)
+map.json
