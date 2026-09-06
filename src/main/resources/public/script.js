@@ -53,7 +53,9 @@ var camy=mapheight/2;
 
 //key inputs
 const keys = {};
-window.addEventListener("keydown",(e) => {keys[e.key.toLowerCase()]=true;})
+window.addEventListener("keydown",(e) => {
+if(e.key===" "){e.preventDefault();}
+keys[e.key.toLowerCase()]=true;})
 window.addEventListener("keyup",(e) => {keys[e.key.toLowerCase()]=false;})
 
 //buttons
