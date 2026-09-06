@@ -1,6 +1,7 @@
 import com.fasterxml.jackson.databind.JsonNode;
 import io.javalin.Javalin;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.javalin.websocket.WsContext;
 
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -24,6 +25,7 @@ public class Main {
                     int id = nextId++;
                     Game.putPlayer(ctx,new  Player(id));
                     ctx.send(mapper.writeValueAsString(Map.of("type", "id", "id", id)));
+                    ctx.send(mapper.writeValueAsString(Map.of("type", "fullmap", "tiles", Game.getMap())));
                     System.out.println("player "+id+" connected, total: "+ Game.getPlayers().size());
                 });
                 ws.onMessage(ctx ->
@@ -36,8 +38,15 @@ public class Main {
                         player.setY(data.get("y").asDouble());
                         player.setColor(data.get("color").asText());
                     }
-                    else if(type.equals("paint")){
-                        Game.getMap().put(data.get("tile").asText(),data.get("color").asText());
+                    else if (type.equals("paint")) {
+                        String tile = data.get("tile").asText();
+                        String color = data.get("color").asText();
+                        Game.getMap().put(tile, color);
+                        // tell everyone about this ONE tile
+                        String paintMsg = mapper.writeValueAsString(Map.of("type", "paint", "tile", tile, "color", color));
+                        for (WsContext c : Game.getPlayers().keySet()) {
+                            try { c.send(paintMsg); } catch (Exception e) {}
+                        }
                     }
                 }catch(Exception e){e.printStackTrace();}});
                 ws.onClose(ctx -> {

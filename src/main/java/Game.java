@@ -35,7 +35,7 @@ public class Game {
     public static void broadcast() throws JsonProcessingException {
     String json = mapper.writeValueAsString(Map.of(
             "type", "positions",
-            "players", players.values(),"tiles", map
+            "players", players.values()
     ));
     for(WsContext ctx : players.keySet()){
         ctx.send(json);

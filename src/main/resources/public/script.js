@@ -25,17 +25,23 @@ const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
 const socket = new WebSocket(wsProtocol + "//" + location.host + "/game");
 socket.addEventListener("open",()=>{console.log("connected");});
 socket.addEventListener("message",(e)=>{
-const msg = JSON.parse(e.data);
-if(msg.type=="id")
-{player.id=msg.id;
-console.log("my id is: "+msg.id);
-}
-if(msg.type=="positions"){
-for (const k in msg.tiles) {
-        mapTiles[k] = msg.tiles[k];
+    const msg = JSON.parse(e.data);
+
+    if(msg.type=="id"){
+        player.id=msg.id;
+        console.log("my id is: "+msg.id);
     }
-    otherPlayers=msg.players;
-}
+    else if(msg.type=="fullmap"){          // whole map, once on join
+        for(const k in msg.tiles){
+            mapTiles[k]=msg.tiles[k];
+        }
+    }
+    else if(msg.type=="paint"){            // one tile someone painted
+        mapTiles[msg.tile]=msg.color;
+    }
+    else if(msg.type=="positions"){        // just players now — NO tiles
+        otherPlayers=msg.players;
+    }
 });
 
 const cellWidth=18;
