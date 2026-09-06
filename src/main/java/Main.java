@@ -11,7 +11,7 @@ public class Main {
     static ObjectMapper mapper = new ObjectMapper();
     static int nextId=0;
     public static void main(String[] args) {
-        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(2);
         Game.loadMap();
         String port = System.getenv("PORT");
         int portNum = (port != null) ? Integer.parseInt(port) : 8080;
@@ -49,7 +49,7 @@ public class Main {
         }).start(portNum);
         scheduledExecutorService.scheduleAtFixedRate(() -> {
             Game.saveMap();
-        }, 30, 30, TimeUnit.SECONDS);   // every 30 seconds
+        }, 30, 30, TimeUnit.MINUTES);   // every 30 seconds
         scheduledExecutorService.scheduleAtFixedRate(()->{
             try{
             Game.broadcast();}
