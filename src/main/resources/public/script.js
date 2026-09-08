@@ -167,7 +167,24 @@ for(let i=0;i<mapwidth/20;i++){
     ctx.fillStyle=mapTiles[key(i,j)]||"white";
     ctx.fillRect(i*20*0.125,j*20*0.125,5,5);
     }
-}}
+}
+//mini players
+for(const p of otherPlayers){
+    ctx.fillStyle=p.color;
+    ctx.fillRect(p.x*0.125,p.y*0.125,5.5,5.5);
+    //name
+    ctx.font="6px monospace"
+    ctx.lineWidth=2;
+    ctx.strokeStyle = "white";
+    ctx.fillStyle = "black";
+    ctx.strokeText(p.name || "anon", p.x*0.125+0.5, p.y*0.125-2);   // stroke FIRST
+    ctx.fillText(p.name || "anon", p.x*0.125+0.5 , p.y*0.125-2);     // fill SECOND
+    ctx.lineWidth=1;
+
+
+}
+}
+
 function drawPlayers() {
     for (const p of otherPlayers) {
         if (p.id === player.id) continue;
