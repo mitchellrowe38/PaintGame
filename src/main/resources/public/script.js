@@ -10,6 +10,18 @@ const mapheight=4800
 const camwidth=1200;
 const camheight=600;
 
+//homeScreen
+const homeScreen = document.getElementById("homeScreen");
+const nameInput = document.getElementById("nameInput");
+const playButton = document.getElementById("playButton");
+
+
+
+playButton.addEventListener("click",()=>{
+player.name=nameInput.value.trim()||"null";
+homeScreen.style.display="none";
+});
+
 //map
 const mapTiles= {}
 function key(a,b){return(a+","+b);}
@@ -17,13 +29,12 @@ function key(a,b){return(a+","+b);}
 
 
 //player
-const player = {x:mapwidth/2,y:mapheight/2,speed:1.5,size:16,color:"white",id:null};
+const player = {x:mapwidth/2,y:mapheight/2,speed:1.5,size:16,color:"white",id:null,name:"placeholder"};
 let otherPlayers=[];
 
 //server
 const wsProtocol = location.protocol === "https:" ? "wss:" : "ws:";
 const socket = new WebSocket(wsProtocol + "//" + location.host + "/game");
-socket.addEventListener("open",()=>{console.log("connected");});
 socket.addEventListener("message",(e)=>{
     const msg = JSON.parse(e.data);
 
@@ -31,15 +42,15 @@ socket.addEventListener("message",(e)=>{
         player.id=msg.id;
         console.log("my id is: "+msg.id);
     }
-    else if(msg.type=="fullmap"){          // whole map, once on join
+    else if(msg.type=="fullmap"){
         for(const k in msg.tiles){
             mapTiles[k]=msg.tiles[k];
         }
     }
-    else if(msg.type=="paint"){            // one tile someone painted
+    else if(msg.type=="paint"){
         mapTiles[msg.tile]=msg.color;
     }
-    else if(msg.type=="positions"){        // just players now — NO tiles
+    else if(msg.type=="positions"){
         otherPlayers=msg.players;
     }
 });
@@ -89,7 +100,8 @@ function update(dt){
         socket.send(JSON.stringify({
             type: "paint",
             tile: key(Math.floor((player.x+9)/20), Math.floor((player.y+9)/20)),
-            color: player.color
+            color: player.color,
+            name: player.name
         }));
     }
 
@@ -130,9 +142,21 @@ for(let i =Math.floor(camx/20)-20;i<Math.floor((camx+1250)/20);i++){
     ctx.fillRect((20*i)-camx,(20*j)-camy,19,19);
     }
 }
+//draws the player (not anyone else)
+ctx.strokeStyle="black";
 ctx.fillStyle=player.color;
 ctx.fillRect(player.x-camx,player.y-camy,player.size,player.size);
 ctx.strokeRect(player.x-camx,player.y-camy,player.size,player.size);
+ctx.font = "12px monospace";
+ctx.textAlign = "center";
+ctx.lineWidth = 4;
+ctx.strokeStyle = "white";
+ctx.fillStyle = "black";
+const nx = (player.x - camx) + player.size/2;
+const ny = (player.y - camy) - 6;
+ctx.strokeText(player.name || "anon", nx, ny);   // stroke first
+ctx.fillText(player.name || "anon", nx, ny);     // fill second
+ctx.lineWidth=1;
 }
 
 function drawMap(){
@@ -159,6 +183,16 @@ function drawPlayers() {
         ctx.fillRect(screenX, screenY, player.size, player.size);
         ctx.strokeStyle = "black";
         ctx.strokeRect(screenX, screenY, player.size, player.size);
+
+        //names
+        ctx.font = "12px monospace";
+        ctx.textAlign = "center";
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = "white";
+        ctx.fillStyle = "black";
+        ctx.strokeText(p.name || "anon", screenX + player.size/2, screenY - 6);   // stroke FIRST
+        ctx.fillText(p.name || "anon", screenX + player.size/2, screenY - 6);     // fill SECOND
+        ctx.lineWidth=1;
     }
 
 }
@@ -170,7 +204,8 @@ if(socket.readyState===WebSocket.OPEN)
     socket.send(JSON.stringify({type: "position",
     x: player.x,
     y: player.y,
-    color: player.color
+    color: player.color,
+    name: player.name
     }));
 }
 },50);

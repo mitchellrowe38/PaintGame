@@ -37,6 +37,7 @@ public class Main {
                         player.setX(data.get("x").asDouble());
                         player.setY(data.get("y").asDouble());
                         player.setColor(data.get("color").asText());
+                        player.setName(data.get("name").asText());
                     }
                     else if (type.equals("paint")) {
                         String tile = data.get("tile").asText();
@@ -48,6 +49,7 @@ public class Main {
                             try { c.send(paintMsg); } catch (Exception e) {}
                         }
                     }
+
                 }catch(Exception e){e.printStackTrace();}});
                 ws.onClose(ctx -> {
                     Player p = Game.getPlayers().get(ctx);

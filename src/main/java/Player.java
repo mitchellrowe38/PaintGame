@@ -4,6 +4,7 @@ public class Player {
     private Double y;
     private String color;
     private int id;
+    private String name;
     public Player(int id) {
         this.x = 2400.0;
         this.y = 1200.0;
@@ -30,5 +31,11 @@ public class Player {
     }
     public void setColor(String color) {
         this.color = color;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public String getName() {
+        return name;
     }
 }
