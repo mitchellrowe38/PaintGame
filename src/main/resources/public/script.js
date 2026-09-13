@@ -14,6 +14,9 @@ const camheight=600;
 const homeScreen = document.getElementById("homeScreen");
 const nameInput = document.getElementById("nameInput");
 const playButton = document.getElementById("playButton");
+//chat
+const chatMessages = document.getElementById("chats");
+const chatInput = document.getElementById("chatinput");
 
 
 
@@ -53,6 +56,9 @@ socket.addEventListener("message",(e)=>{
     else if(msg.type=="positions"){
         otherPlayers=msg.players;
     }
+    else if(msg.type=="chat"){
+    addChat(msg.message);
+    }
 });
 
 const cellWidth=18;
@@ -65,9 +71,42 @@ var camy=mapheight/2;
 //key inputs
 const keys = {};
 window.addEventListener("keydown",(e) => {
+if(document.activeElement===chatInput){return;}
+if (e.key === "Enter") {
+        chatInput.focus();
+        e.preventDefault();
+        return;
+    }
+
 if(e.key===" "){e.preventDefault();}
 keys[e.key.toLowerCase()]=true;})
 window.addEventListener("keyup",(e) => {keys[e.key.toLowerCase()]=false;})
+
+//chat
+chatInput.addEventListener("keydown",(e)=>{
+if(e.key==="Enter"){
+const chatMsg=chatInput.value.trim();
+if(chatMsg){
+socket.send(JSON.stringify({type:"chat",message:chatMsg}));
+}
+chatInput.value = "";
+chatInput.blur();
+e.preventDefault();
+}
+
+if(e.key==="Escape"){
+chatInput.value="";
+chatInput.blur();
+}}
+);
+
+function addChat(text){
+const line = document.createElement("div");
+line.textContent = text;
+chatMessages.appendChild(line);
+chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
 
 //buttons
 const redButton=document.getElementById("redButton");

@@ -43,26 +43,19 @@ public class Game {
     }
     public static void saveMap() {
         try {
-            mapper.writeValue(new File(mapFile), map);   // map → map.json file
+            mapper.writeValue(new File(mapFile), map);
             System.out.println("map saved");
         } catch (Exception e) {
             System.out.println("save failed: " + e.getMessage());
         }
     }
-    public static void SaveMap() {
-        try {
-            File file = new File(mapFile);
-            if (!file.exists()) {}
-        }
-        catch (Exception e) {e.printStackTrace();}
-    }
     public static void loadMap() {
         try {
             File file = new File(mapFile);
-            if (file.exists()) {                                    // only if it's there
+            if (file.exists()) {
                 ConcurrentHashMap<String, String> loaded =
-                        mapper.readValue(file, ConcurrentHashMap.class); // file → map
-                map.putAll(loaded);                                  // copy into our map
+                        mapper.readValue(file, ConcurrentHashMap.class);
+                map.putAll(loaded);
                 System.out.println("map loaded, " + map.size() + " tiles");
             }
         } catch (Exception e) {

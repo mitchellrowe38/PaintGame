@@ -49,6 +49,14 @@ public class Main {
                             try { c.send(paintMsg); } catch (Exception e) {}
                         }
                     }
+                    else if (type.equals("chat")) {
+                        String msg = data.get("message").asText();
+                        msg = player.getName() + ": " + msg;
+                        for(WsContext c : Game.getPlayers().keySet()){
+                            try{c.send(mapper.writeValueAsString(Map.of("type","chat","message",msg)));} catch (Exception e) {}
+                        }
+
+                    }
 
                 }catch(Exception e){e.printStackTrace();}});
                 ws.onClose(ctx -> {
